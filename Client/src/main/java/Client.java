@@ -18,7 +18,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
     }
 
     private final JTextArea chat = new JTextArea();
-    private final JTextField nickname = new JTextField("nickname");
+    private final JTextField nickname = new JTextField("Имя");
     private final JTextField input = new JTextField("");
 
     private Connection connection;
@@ -46,7 +46,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
             connection = new Connection(this, IP, PORT);
         } catch (IOException e) {
             clientLogger.error(e);
-            printMessage("Connection exception: " + e);
+            printMessage("Ошибка cоединения: " + e);
         }finally {
             clientLogger.info("Connection created "+connection);
         }
@@ -58,32 +58,33 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         if (msg.equals("")) return;
         input.setText("");
         connection.sendMessage(nickname.getText() + ": " + msg);
-        clientLogger.info("Message sent " + msg);
+        clientLogger.info("Message is sent to the connection: " + msg);
     }
 
     @Override
     public void onConnection(Connection connection) {
-        printMessage("Connection ready...");
+        printMessage(" Соединение установлено");
         clientLogger.info("Connection ready");
     }
 
     @Override
     public void onMessage(Connection connection, String message) {
         printMessage(message);
-        clientLogger.info("Message printed " + message);
+        clientLogger.info("Message is printed to the UI: " + message);
     }
 
     @Override
     public void onDisconnect(Connection connection) {
-        printMessage("Connection close");
-        clientLogger.info("Connecion closed");
+        printMessage("Соединение разорвано");
+        clientLogger.info("Connection closed");
     }
 
     @Override
     public void onException(Connection connection, Exception e) {
-        printMessage("Connection exception: " + e);
+        printMessage("Ошибка оединения: " + e);
         clientLogger.error(e);
     }
+
 
     private synchronized void printMessage(String msg) {
         SwingUtilities.invokeLater(() -> {

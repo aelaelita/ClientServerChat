@@ -4,12 +4,12 @@
     <Appenders>
         <File name="serverLog" fileName="log/server.log">
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{10.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
         <File name="rootLog" fileName="log/root.log">
             <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{10.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
         <Console name="STDOUT" target="SYSTEM_OUT">

@@ -31,7 +31,7 @@ public class Connection {
             @Override
             public void run() {
                 try {
-                    connectionLogger.info("Created new read/write thread");
+                    connectionLogger.info("Created new read/write " + Connection.this.toString() + " thread with " + connectionListener.getClass() + " as listener");
                     connectionListener.onConnection(Connection.this);
                     while (!rwThread.isInterrupted()) {
                         connectionListener.onMessage(Connection.this, in.readLine());
@@ -49,7 +49,7 @@ public class Connection {
 
     synchronized void sendMessage(String msg) {
         try {
-            out.write(msg + "\r\n");//символ конца строки
+            out.write(msg + "\r\n");
             out.flush();
         } catch (IOException e) {
             connectionListener.onException(this, e);

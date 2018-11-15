@@ -37,8 +37,8 @@ class PluginLoading {
     }
 
     private static boolean isPluginImplemented(Class[] interfaces) {
-        for (Class item : interfaces)
-            if (item.getName().contains("Plugin"))
+        for (Class cinterface : interfaces)
+            if (cinterface.getName().contains("Plugin"))
                 return true;
         return false;
     }

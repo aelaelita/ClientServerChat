@@ -18,6 +18,7 @@ public class Server implements ConnectionListener {
 
         serverLogger.info("New chat server is created");
         commands = PluginLoading.getPlugins();
+        serverLogger.info("Plugins are loaded");
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
             while (true) {
                 try {
@@ -37,12 +38,13 @@ public class Server implements ConnectionListener {
         new Server();
     }
 
-    private void computeCommand(Connection connection, String command) {
+    synchronized private void computeCommand(Connection connection, String command) {
         CommandThread commandThread = new CommandThread(commands, command, this, connection);
         commandThread.start();
     }
 
-    void onCommandFinished(CommandThread commandThread, Connection connection) {
+    synchronized void onCommandFinished(CommandThread commandThread, Connection connection) {
+        serverLogger.info("Command calculation finished");
         commandThread.interrupt();
         sendTo(connection, commandThread.getResult());
     }
@@ -51,11 +53,10 @@ public class Server implements ConnectionListener {
         int i = message.indexOf(":");
         String messageText = message.substring(i + 2);
         for (Plugin command : commands)
-            if(command.isCommand(messageText))
+            if (command.isCommand(messageText))
                 return true;
         return false;
     }
-
 
     @Override
     public synchronized void onConnection(Connection connection) {
@@ -69,8 +70,8 @@ public class Server implements ConnectionListener {
         if (isCommand(message)) {
             String messageText = message.substring(message.indexOf(":") + 2);
             computeCommand(connection, messageText);
-        }
-        else notifyAll(message);
+            serverLogger.info("Started to compute command from " + connection.toString() + ": " + messageText);
+        } else notifyAll(message);
     }
 
     @Override
@@ -94,5 +95,6 @@ public class Server implements ConnectionListener {
 
     private void sendTo(Connection connection, String msg) {
         connection.sendMessage(msg);
+        serverLogger.info("Send message(" + msg + ") to " + connection.toString());
     }
 }

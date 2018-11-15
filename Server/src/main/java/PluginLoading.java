@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -7,7 +10,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 class PluginLoading {
-     static ArrayList<Plugin> getPlugins() {
+    private static Logger serverLogger;
+
+    static ArrayList<Plugin> getPlugins() {
+        System.setProperty("log4j.configurationFile", "Server/src/main/resources/log4j.xml");
+        serverLogger = LogManager.getLogger("Server.Server");
+
         ArrayList<Plugin> plugins = new ArrayList<>();
         File pluginDir = new File("Plugins");
         File[] jars = pluginDir.listFiles(file -> file.isFile() && file.getName().endsWith(".jar"));
@@ -30,7 +38,7 @@ class PluginLoading {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                serverLogger.error("Exception during plugins loading " + e);
             }
         }
         return plugins;

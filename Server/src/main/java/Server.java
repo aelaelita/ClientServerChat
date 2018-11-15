@@ -14,7 +14,8 @@ public class Server implements ConnectionListener {
 
     private Server() {
         System.setProperty("log4j.configurationFile", "Server/src/main/resources/log4j.xml");
-        serverLogger = LogManager.getLogger(Server.class);
+        serverLogger = LogManager.getLogger("Server.Server");
+
         serverLogger.info("New chat server is created");
         commands = PluginLoading.getPlugins();
         try (ServerSocket serverSocket = new ServerSocket(8080)) {

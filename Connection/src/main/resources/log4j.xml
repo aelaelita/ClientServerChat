@@ -4,12 +4,12 @@
     <Appenders>
         <File name="connectionLog" fileName="log/connection.log">
             <PatternLayout>
-                <Pattern>%d %p %c{10.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
         <File name="rootLog" fileName="log/root.log">
             <PatternLayout>
-                <Pattern>%d %p %c{10.} [%t] %m %ex%n</Pattern>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
         <Console name="STDOUT" target="SYSTEM_OUT">
@@ -18,7 +18,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name= "Connection.Connection" level="info" additivity="true">
+        <Logger name= "Connection.Connection" level="all" additivity="true">
             <AppenderRef ref="connectionLog"/>
         </Logger>
 

@@ -25,7 +25,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
 
     private Client() {
         System.setProperty("log4j.configurationFile", "Client/src/main/resources/log4j.xml");
-        clientLogger = LogManager.getLogger(Client.class);
+        clientLogger = LogManager.getLogger("Client.Client");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(700, 400);
@@ -47,8 +47,8 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         } catch (IOException e) {
             clientLogger.error(e);
             printMessage("Ошибка cоединения: " + e);
-        }finally {
-            clientLogger.info("Connection created "+connection);
+        } finally {
+            clientLogger.info("Connection created " + connection);
         }
     }
 
@@ -63,8 +63,8 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
 
     @Override
     public void onConnection(Connection connection) {
-        printMessage(" Соединение установлено");
-        clientLogger.info("Connection ready");
+        printMessage("Соединение установлено");
+        clientLogger.info("Connection " + connection.toString() + " is established");
     }
 
     @Override

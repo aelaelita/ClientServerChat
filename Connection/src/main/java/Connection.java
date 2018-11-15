@@ -21,7 +21,8 @@ public class Connection {
     }
 
     Connection(Socket socket, ConnectionListener connectionListener) throws IOException {
-        connectionLogger = LogManager.getLogger(Connection.class);
+        System.setProperty("log4j.configurationFile", "Connection/src/main/resources/log4j.xml");
+        connectionLogger = LogManager.getLogger("Connection.Connection");
 
         this.socket = socket;
         this.connectionListener = connectionListener;

@@ -36,19 +36,25 @@ public class Server implements ConnectionListener {
         new Server();
     }
 
-    private String getCommandResult(String message) {
-        for (Plugin command : commands) {
-            if (command.isCommand(message))
-                return command.getResult(message);
-        }
-        return "";
+    private void computeCommand(Connection connection, String command) {
+        CommandThread commandThread = new CommandThread(commands, command, this, connection);
+        commandThread.start();
     }
 
-    private boolean isPossibleCommand(String message) {
-        int i = message.indexOf(":");
-        String messageText = message.substring(i+2);
-        return messageText.startsWith("/");
+    void onCommandFinished(CommandThread commandThread, Connection connection) {
+        commandThread.interrupt();
+        sendTo(connection, commandThread.getResult());
     }
+
+    private boolean isCommand(String message) {
+        int i = message.indexOf(":");
+        String messageText = message.substring(i + 2);
+        for (Plugin command : commands)
+            if(command.isCommand(messageText))
+                return true;
+        return false;
+    }
+
 
     @Override
     public synchronized void onConnection(Connection connection) {
@@ -59,15 +65,11 @@ public class Server implements ConnectionListener {
 
     @Override
     public synchronized void onMessage(Connection connection, String message) {
-        if (isPossibleCommand(message)) {
-            String messageText = message.substring(message.indexOf(":")+2);
-            String result = getCommandResult(messageText);
-            if (!result.equals("")) {
-                sendTo(connection, result);
-                return;
-            }
+        if (isCommand(message)) {
+            String messageText = message.substring(message.indexOf(":") + 2);
+            computeCommand(connection, messageText);
         }
-        notifyAll(message);
+        else notifyAll(message);
     }
 
     @Override

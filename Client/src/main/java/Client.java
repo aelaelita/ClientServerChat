@@ -45,7 +45,8 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         try {
             connection = new Connection(this, IP, PORT);
         } catch (IOException e) {
-            clientLogger.error(e);
+            clientLogger.trace(e);
+            clientLogger.error("Connection error");
             printMessage("Ошибка cоединения: " + e);
         } finally {
             clientLogger.info("Connection created " + connection);
@@ -58,31 +59,35 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         if (msg.equals("")) return;
         input.setText("");
         connection.sendMessage(nickname.getText() + ": " + msg);
-        clientLogger.info("Message is sent to the connection: " + msg);
+        clientLogger.debug("Message is sent to the connection: " + msg);
     }
 
     @Override
     public void onConnection(Connection connection) {
         printMessage("Соединение установлено");
-        clientLogger.info("Connection " + connection.toString() + " is established");
+        clientLogger.debug("Connection " + connection.toString() + " is established");
+        clientLogger.info("Connection is established");
     }
 
     @Override
     public void onMessage(Connection connection, String message) {
         printMessage(message);
-        clientLogger.info("Message is printed to the UI: " + message);
+        clientLogger.debug("Message is printed to the UI: " + message);
+        clientLogger.info("Message is sent");
     }
 
     @Override
     public void onDisconnect(Connection connection) {
         printMessage("Соединение разорвано");
         clientLogger.info("Connection closed");
+        clientLogger.debug(connection.toString() +" closed");
     }
 
     @Override
     public void onException(Connection connection, Exception e) {
         printMessage("Ошибка оединения: " + e);
-        clientLogger.error(e);
+        clientLogger.error("Connection error");
+        clientLogger.trace(e);
     }
 
 

@@ -38,7 +38,7 @@ class PluginLoading {
                     }
                 }
             } catch (Exception e) {
-                serverLogger.error("Exception during plugins loading " + e);
+                serverLogger.trace(e);
             }
         }
         return plugins;

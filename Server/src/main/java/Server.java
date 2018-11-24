@@ -18,7 +18,7 @@ public class Server implements ConnectionListener {
 
         serverLogger.info("New chat server is created");
         commands = PluginLoading.getPlugins();
-        serverLogger.info("Plugins are loaded");
+        serverLogger.debug("Plugins are loaded");
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
             while (true) {
                 try {
@@ -44,12 +44,13 @@ public class Server implements ConnectionListener {
     }
 
     synchronized void onCommandFinished(CommandThread commandThread, Connection connection) {
-        serverLogger.info("Command calculation finished");
+        serverLogger.debug("Command calculation finished with result: " + commandThread.getResult());
         commandThread.interrupt();
         sendTo(connection, commandThread.getResult());
     }
 
     private boolean isCommand(String message) {
+        if (!message.contains("/")) return false;
         int i = message.indexOf(":");
         String messageText = message.substring(i + 2);
         for (Plugin command : commands)
@@ -70,7 +71,7 @@ public class Server implements ConnectionListener {
         if (isCommand(message)) {
             String messageText = message.substring(message.indexOf(":") + 2);
             computeCommand(connection, messageText);
-            serverLogger.info("Started to compute command from " + connection.toString() + ": " + messageText);
+            serverLogger.debug("Started to compute command from " + connection.toString() + ": " + messageText);
         } else notifyAll(message);
     }
 
@@ -90,11 +91,11 @@ public class Server implements ConnectionListener {
         for (Connection connection : connections) {
             connection.sendMessage(msg);
         }
-        serverLogger.info("Message is sent to all connections: " + msg);
+        serverLogger.debug("Message is sent to all connections: " + msg);
     }
 
     private void sendTo(Connection connection, String msg) {
         connection.sendMessage(msg);
-        serverLogger.info("Send message(" + msg + ") to " + connection.toString());
+        serverLogger.debug("Send message(" + msg + ") to " + connection.toString());
     }
 }

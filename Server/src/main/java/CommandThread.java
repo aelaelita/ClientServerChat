@@ -27,7 +27,7 @@ class CommandThread extends Thread {
 
     @Override
     public void run() {
-        serverLogger.info("Created new thread for command computation");
+        serverLogger.debug("Created new thread for command computation");
         while (!Thread.currentThread().isInterrupted()) {
             for (Plugin command : commands) {
                 if (command.isCommand(message)) {
@@ -37,7 +37,7 @@ class CommandThread extends Thread {
             }
             Thread.currentThread().interrupt();
         }
-        serverLogger.info("Thread for command computation interrupted");
+        serverLogger.debug("Thread for command computation interrupted");
         listener.onCommandFinished(this, connection);
     }
 

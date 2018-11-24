@@ -58,19 +58,19 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         if (msg.equals("")) return;
         input.setText("");
         connection.sendMessage(nickname.getText() + ": " + msg);
-        clientLogger.info("Message is sent to the connection: " + msg);
+        clientLogger.debug("Message is sent to the connection: " + msg);
     }
 
     @Override
     public void onConnection(Connection connection) {
         printMessage("Соединение установлено");
-        clientLogger.info("Connection " + connection.toString() + " is established");
+        clientLogger.debug("Connection " + connection.toString() + " is established");
     }
 
     @Override
     public void onMessage(Connection connection, String message) {
         printMessage(message);
-        clientLogger.info("Message is printed to the UI: " + message);
+        clientLogger.debug("Message is printed to the UI: " + message);
     }
 
     @Override

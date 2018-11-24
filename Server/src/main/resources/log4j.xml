@@ -11,6 +11,7 @@
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
         </File>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%m%n"/>
@@ -18,11 +19,12 @@
     </Appenders>
 
     <Loggers>
-        <Logger name= "Server.Server" level="all" additivity="true">
+        <Logger name= "Server.Server" level="all" additivity="false">
             <AppenderRef ref="serverLog"/>
+            <AppenderRef ref="rootLog"/>
         </Logger>
 
-        <Root level="all">
+        <Root level="INFO">
             <AppenderRef ref="rootLog"/>
         </Root>
     </Loggers>

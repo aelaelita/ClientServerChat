@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 
 
-class CommandThread extends Thread {
+class CommandThread implements Runnable {
 
     private final ArrayList<Plugin> commands;
     private final String message;
@@ -35,7 +35,6 @@ class CommandThread extends Thread {
                     Thread.currentThread().interrupt();
                 }
             }
-            Thread.currentThread().interrupt();
         }
         serverLogger.debug("Thread for command computation interrupted");
         listener.onCommandFinished(this, connection);

@@ -39,14 +39,13 @@ public class Server implements ConnectionListener {
     }
 
     synchronized private void computeCommand(Connection connection, String command) {
-        CommandThread commandThread = new CommandThread(commands, command, this, connection);
+        Thread commandThread = new Thread(new CommandThread(commands, command, this, connection));
         commandThread.start();
         serverLogger.debug("Created new commandThread " + commandThread);
     }
 
     synchronized void onCommandFinished(CommandThread commandThread, Connection connection) {
         serverLogger.debug("Command calculation finished with result " + commandThread.getResult());
-        commandThread.interrupt();
         sendTo(connection, commandThread.getResult());
     }
 

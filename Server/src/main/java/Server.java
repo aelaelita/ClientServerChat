@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,9 +91,10 @@ public class Server implements ConnectionListener {
         serverLogger.error(e);
     }
 
-    private void notifyAll(String msg) {
+    private synchronized void notifyAll(String msg) {
+        ExecutorService threadPool = Executors.newFixedThreadPool(8);
         for (Connection connection : connections) {
-            connection.sendMessage(msg);
+            threadPool.submit(() -> connection.sendMessage(msg));
         }
         serverLogger.debug("Message is sent to all connections: " + msg);
         serverLogger.info("Message is sent to everybody");

@@ -18,18 +18,17 @@ public class Server implements ConnectionListener {
 
         serverLogger.info("New chat server is created");
         commands = PluginLoading.getPlugins();
-        serverLogger.info("Plugins are loaded");
+        serverLogger.debug("Plugins are loaded");
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
             while (true) {
                 try {
                     new Connection(serverSocket.accept(), this);
                 } catch (IOException e) {
-                    serverLogger.error("Error while creating connection");
-                    serverLogger.trace(e);
+                    serverLogger.error("Error while creating connection: ", e);
                 }
             }
         } catch (IOException e) {
-            serverLogger.trace(e);
+            serverLogger.error(e);
             throw new RuntimeException(e);
 
         }
@@ -42,16 +41,16 @@ public class Server implements ConnectionListener {
     synchronized private void computeCommand(Connection connection, String command) {
         CommandThread commandThread = new CommandThread(commands, command, this, connection);
         commandThread.start();
-        serverLogger.debug("Created new commandThread " + commandThread);
     }
 
     synchronized void onCommandFinished(CommandThread commandThread, Connection connection) {
-        serverLogger.debug("Command calculation finished with result " + commandThread.getResult());
+        serverLogger.debug("Command calculation finished with result: " + commandThread.getResult());
         commandThread.interrupt();
         sendTo(connection, commandThread.getResult());
     }
 
     private boolean isCommand(String message) {
+        if (!message.contains("/")) return false;
         int i = message.indexOf(":");
         String messageText = message.substring(i + 2);
         for (Plugin command : commands)
@@ -80,8 +79,7 @@ public class Server implements ConnectionListener {
     public synchronized void onDisconnect(Connection connection) {
         connections.remove(connection);
         notifyAll("Один из пользователей покинул чат");
-        serverLogger.debug("Client disconnected: " + connection);
-        serverLogger.info("One client disconnected");
+        serverLogger.info("Client disconnected: " + connection);
     }
 
     @Override
@@ -94,12 +92,10 @@ public class Server implements ConnectionListener {
             connection.sendMessage(msg);
         }
         serverLogger.debug("Message is sent to all connections: " + msg);
-        serverLogger.info("Message is sent");
     }
 
     private void sendTo(Connection connection, String msg) {
         connection.sendMessage(msg);
         serverLogger.debug("Send message(" + msg + ") to " + connection.toString());
-        serverLogger.info("Message is sent");
     }
 }

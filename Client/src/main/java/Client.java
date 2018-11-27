@@ -45,8 +45,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         try {
             connection = new Connection(this, IP, PORT);
         } catch (IOException e) {
-            clientLogger.trace(e);
-            clientLogger.error("Connection error");
+            clientLogger.error(e);
             printMessage("Ошибка cоединения: " + e);
         } finally {
             clientLogger.info("Connection created " + connection);
@@ -66,28 +65,24 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
     public void onConnection(Connection connection) {
         printMessage("Соединение установлено");
         clientLogger.debug("Connection " + connection.toString() + " is established");
-        clientLogger.info("Connection is established");
     }
 
     @Override
     public void onMessage(Connection connection, String message) {
         printMessage(message);
         clientLogger.debug("Message is printed to the UI: " + message);
-        clientLogger.info("Message is sent");
     }
 
     @Override
     public void onDisconnect(Connection connection) {
         printMessage("Соединение разорвано");
         clientLogger.info("Connection closed");
-        clientLogger.debug(connection.toString() +" closed");
     }
 
     @Override
     public void onException(Connection connection, Exception e) {
         printMessage("Ошибка оединения: " + e);
-        clientLogger.error("Connection error");
-        clientLogger.trace(e);
+        clientLogger.error(e);
     }
 
 

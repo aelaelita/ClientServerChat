@@ -21,7 +21,6 @@ public class Connection {
     }
 
     Connection(Socket socket, ConnectionListener connectionListener) throws IOException {
-        System.setProperty("log4j.configurationFile", "Connection/src/main/resources/log4j.xml");
         connectionLogger = LogManager.getLogger("Connection.Connection");
 
         this.socket = socket;
@@ -32,15 +31,14 @@ public class Connection {
             @Override
             public void run() {
                 try {
-                    connectionLogger.info("Created new read/write " + Connection.this.toString() + " thread with " + connectionListener.getClass() + " as listener");
+                    connectionLogger.info("Created new read/write " + this.toString() + " thread with " + connectionListener.getClass() + " as listener");
                     connectionListener.onConnection(Connection.this);
                     while (!rwThread.isInterrupted()) {
                         connectionLogger.debug("Read/write thread is interrupted");
                         connectionListener.onMessage(Connection.this, in.readLine());
                     }
                 } catch (IOException e) {
-                    connectionLogger.error("Error while creating connection");
-                    connectionLogger.trace(e);
+                    connectionLogger.error("Error while creating connection", e);
                     e.printStackTrace();
                 } finally {
                     connectionListener.onDisconnect(Connection.this);
@@ -54,11 +52,10 @@ public class Connection {
         try {
             out.write(msg + "\r\n");
             out.flush();
-            connectionLogger.debug(msg+" is written to the buffer");
+            connectionLogger.debug(msg + " is written to the buffer");
         } catch (IOException e) {
             connectionListener.onException(this, e);
-            connectionLogger.error("Error while writing to the buffer");
-            connectionLogger.trace(e);
+            connectionLogger.error("Error while writing to the buffer", e);
             disconnect();
         }
     }
@@ -70,8 +67,7 @@ public class Connection {
             connectionLogger.info(socket.toString() + " closed.");
         } catch (IOException e) {
             connectionListener.onException(this, e);
-            connectionLogger.error("Error while closing the socket");
-            connectionLogger.trace(e);
+            connectionLogger.error("Error while closing the socket", e);
         }
 
     }

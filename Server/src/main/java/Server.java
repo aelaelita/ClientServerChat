@@ -13,7 +13,7 @@ public class Server implements ConnectionListener {
     private final ArrayList<Plugin> commands;
 
     private Server() {
-        System.setProperty("log4j.configurationFile", "Server/src/main/resources/log4j.xml");
+        System.setProperty("log4j.configurationFile", "src/main/resources/log4j.xml");
         serverLogger = LogManager.getLogger("Server.Server");
 
         serverLogger.info("New chat server is created");
@@ -24,12 +24,11 @@ public class Server implements ConnectionListener {
                 try {
                     new Connection(serverSocket.accept(), this);
                 } catch (IOException e) {
-                    serverLogger.error("Error while creating connection");
-                    serverLogger.trace(e);
+                    serverLogger.error("Error while creating connection", e);
                 }
             }
         } catch (IOException e) {
-            serverLogger.trace(e);
+            serverLogger.error("Error while creating socket", e);
             throw new RuntimeException(e);
 
         }

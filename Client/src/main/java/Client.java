@@ -24,7 +24,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
     private Connection connection;
 
     private Client() {
-        System.setProperty("log4j.configurationFile", "Client/src/main/resources/log4j.xml");
+        System.setProperty("log4j.configurationFile", "src/main/resources/log4j.xml");
         clientLogger = LogManager.getLogger("Client.Client");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -45,8 +45,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
         try {
             connection = new Connection(this, IP, PORT);
         } catch (IOException e) {
-            clientLogger.trace(e);
-            clientLogger.error("Connection error");
+            clientLogger.error("Connection error", e);
             printMessage("Ошибка cоединения: " + e);
         } finally {
             clientLogger.info("Connection created " + connection);
@@ -86,8 +85,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
     @Override
     public void onException(Connection connection, Exception e) {
         printMessage("Ошибка оединения: " + e);
-        clientLogger.error("Connection error");
-        clientLogger.trace(e);
+        clientLogger.error("Connection error", e);
     }
 
 

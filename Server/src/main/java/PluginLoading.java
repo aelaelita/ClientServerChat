@@ -13,7 +13,6 @@ class PluginLoading {
     private static Logger serverLogger;
 
     static ArrayList<Plugin> getPlugins() {
-        System.setProperty("log4j.configurationFile", "Server/src/main/resources/log4j.xml");
         serverLogger = LogManager.getLogger("Server.Server");
 
         ArrayList<Plugin> plugins = new ArrayList<>();
@@ -38,7 +37,7 @@ class PluginLoading {
                     }
                 }
             } catch (Exception e) {
-                serverLogger.trace(e);
+                serverLogger.error("Error while loading plugins", e);
             }
         }
         return plugins;

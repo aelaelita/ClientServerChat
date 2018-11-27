@@ -61,6 +61,7 @@ public class Connection {
     }
 
     synchronized void disconnect() {
+        connectionLogger.debug("Trying to close " + socket.toString());
         rwThread.interrupt();
         try {
             socket.close();

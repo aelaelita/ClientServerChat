@@ -11,6 +11,7 @@ public class Server implements ConnectionListener {
 
     private final ArrayList<Connection> connections = new ArrayList<>();
     private final ArrayList<Plugin> commands;
+    private final CommandScheduler commandScheduler;
 
     private Server() {
         System.setProperty("log4j.configurationFile", "src/main/resources/log4j.xml");
@@ -19,6 +20,7 @@ public class Server implements ConnectionListener {
         serverLogger.info("New chat server is created");
         commands = PluginLoading.getPlugins();
         serverLogger.debug("Plugins are loaded");
+        commandScheduler = new CommandScheduler(commands, this);
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
             while (true) {
                 try {
@@ -39,14 +41,15 @@ public class Server implements ConnectionListener {
     }
 
     synchronized private void computeCommand(Connection connection, String command) {
-        Thread commandThread = new Thread(new CommandThread(commands, command, this, connection));
-        commandThread.start();
-        serverLogger.debug("Created new commandThread " + commandThread);
+        commandScheduler.addTask(command, connection);
+        if (!CommandScheduler.isRunning)
+            commandScheduler.run();
+        serverLogger.debug("Added new command (" + command + ") to the Scheduler");
     }
 
-    synchronized void onCommandFinished(CommandThread commandThread, Connection connection) {
-        serverLogger.debug("Command calculation finished with result " + commandThread.getResult());
-        sendTo(connection, commandThread.getResult());
+    synchronized void onCommandFinished(Connection connection, String result) {
+        serverLogger.debug("Command computation finished with result: " + result);
+        sendTo(connection, result);
     }
 
     private boolean isCommand(String message) {
@@ -93,12 +96,12 @@ public class Server implements ConnectionListener {
             connection.sendMessage(msg);
         }
         serverLogger.debug("Message is sent to all connections: " + msg);
-        serverLogger.info("Message is sent");
+        serverLogger.info("Message is sent to everybody");
     }
 
     private void sendTo(Connection connection, String msg) {
         connection.sendMessage(msg);
-        serverLogger.debug("Send message(" + msg + ") to " + connection.toString());
-        serverLogger.info("Message is sent");
+        serverLogger.debug("Command result (" + msg + ") is sent to " + connection.toString());
+        serverLogger.info("Command result is sent");
     }
 }

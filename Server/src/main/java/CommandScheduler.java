@@ -1,16 +1,13 @@
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-class CommandScheduler implements Runnable {
+class CommandScheduler {
     private final ArrayList<Plugin> commands;
     private final Server listener;
-    private ArrayList<Pair> tasks;
     private ExecutorService threadPool;
     private static Logger serverLogger;
     static boolean isRunning;
@@ -19,49 +16,18 @@ class CommandScheduler implements Runnable {
         this.commands = commands;
         this.listener = listener;
         threadPool = Executors.newFixedThreadPool(8);
-        tasks = new ArrayList<>();
         serverLogger = LogManager.getLogger("Server.Server");
         isRunning = false;
     }
 
     void addTask(String task, Connection source) {
-        CommandRunner commandRunner = new CommandRunner(commands, task);
-        Future<String> future = threadPool.submit(commandRunner);
-        tasks.add(new Pair(source, future));
+        CommandRunner commandRunner = new CommandRunner(commands, task, this, source);
+        threadPool.submit(commandRunner);
         serverLogger.debug("Add new command task " + task + " from " + source.toString());
     }
 
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted() && tasks.size() != 0) {
-            for (Pair taskPair : tasks) {
-                try {
-                    isRunning = true;
-                    if (taskPair.future.isDone()) {
-                        listener.onCommandFinished(taskPair.source, taskPair.future.get());
-                        tasks.remove(taskPair);
-                        serverLogger.debug("Computation of command from " + taskPair.source + " is finished");
-                    }
-                } catch (ExecutionException e) {
-                    Thread.currentThread().interrupt();
-                    isRunning = false;
-                    serverLogger.error("Error while getting result of the command", e);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    isRunning = false;
-                    serverLogger.error("Error while getting result of the command", e);
-                }
-            }
-        }
-    }
-
-    class Pair {
-        Connection source;
-        Future<String> future;
-
-        public Pair(Connection source, Future<String> future) {
-            this.source = source;
-            this.future = future;
-        }
+    void onCommandFinished(String result, Connection connection) {
+        serverLogger.debug("Send result of the command (" + result + ") to the server");
+        listener.onCommandFinished(connection, result);
     }
 }

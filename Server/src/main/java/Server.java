@@ -42,8 +42,6 @@ public class Server implements ConnectionListener {
 
     synchronized private void computeCommand(Connection connection, String command) {
         commandScheduler.addTask(command, connection);
-        if (!CommandScheduler.isRunning)
-            commandScheduler.run();
         serverLogger.debug("Added new command (" + command + ") to the Scheduler");
     }
 

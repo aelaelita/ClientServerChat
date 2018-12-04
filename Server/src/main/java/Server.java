@@ -15,7 +15,7 @@ public class Server implements ConnectionListener {
     private final ArrayList<Plugin> commands;
     private final CommandScheduler commandScheduler;
 
-    private Server() {
+    Server() {
         System.setProperty("log4j.configurationFile", "src/main/resources/log4j.xml");
         serverLogger = LogManager.getLogger("Server.Server");
 
@@ -47,7 +47,7 @@ public class Server implements ConnectionListener {
         serverLogger.debug("Added new command (" + command + ") to the Scheduler");
     }
 
-    synchronized void onCommandFinished(Connection connection, String result) {
+    public synchronized void onCommandFinished(Connection connection, String result) {
         serverLogger.debug("Command computation finished with result: " + result);
         sendTo(connection, result);
     }
@@ -100,7 +100,7 @@ public class Server implements ConnectionListener {
         serverLogger.info("Message is sent to everybody");
     }
 
-    private void sendTo(Connection connection, String msg) {
+    private synchronized void sendTo(Connection connection, String msg) {
         connection.sendMessage(msg);
         serverLogger.debug("Command result (" + msg + ") is sent to " + connection.toString());
         serverLogger.info("Command result is sent");

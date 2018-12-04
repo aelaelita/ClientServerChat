@@ -23,7 +23,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
 
     private Connection connection;
 
-    private Client() {
+    Client() {
         System.setProperty("log4j.configurationFile", "src/main/resources/log4j.xml");
         clientLogger = LogManager.getLogger("Client.Client");
 
@@ -80,7 +80,7 @@ public class Client extends JFrame implements ActionListener, ConnectionListener
     public void onDisconnect(Connection connection) {
         printMessage("Соединение разорвано");
         clientLogger.info("Connection closed");
-        clientLogger.debug(connection.toString() +" closed");
+        clientLogger.debug(connection.toString() + " closed");
     }
 
     @Override
